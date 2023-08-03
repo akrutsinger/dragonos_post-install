@@ -1,0 +1,6 @@
+---
+# InfluxDB task variables
+
+influxdb_version: "influxdb_1.8.10_amd64"
+
+influxdb_url: "https://dl.influxdata.com/influxdb/releases/{{ influxdb_version }}.deb"

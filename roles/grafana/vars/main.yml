@@ -1,0 +1,5 @@
+---
+# Grafana task variables
+
+grafana_ppa: "deb https://apt.grafana.com stable main"
+grafana_ppa_key: https://packages.grafana.com/gpg.key

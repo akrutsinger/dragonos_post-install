@@ -1,0 +1,23 @@
+---
+# Install & Configure InfluxDB
+
+- name: "Check if InfluxDB is installed"
+  command: dpkg-query -W influxdb
+  register: influxdb_check_deb
+  failed_when: influxdb_check_deb.rc > 1
+  changed_when: influxdb_check_deb.rc == 1
+
+- name: "Install InfluxDB"
+  apt: deb="{{ influxdb_url }}"
+  become: true
+  when: influxdb_check_deb.rc == 1
+  debugger: on_failed
+
+- name: "Start InfluxDB service"
+  service:
+    name: "influxdb"
+    enabled: true
+    state: started
+
+- name: "Create database"
+  command: influx -execute 'CREATE DATABASE WBFM'

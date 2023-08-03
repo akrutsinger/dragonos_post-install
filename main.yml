@@ -1,0 +1,10 @@
+---
+- name: "DragonOS Post-install"
+  hosts: localhost
+  connection: local
+  roles:
+    - role: "roles/apt"
+    - role: "roles/influxdb"
+    - role: "roles/grafana"
+  become_user: root
+  become: true

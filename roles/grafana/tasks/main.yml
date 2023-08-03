@@ -1,0 +1,54 @@
+---
+# Install & Configure Grafana
+
+- name: Add grafana public key
+  apt_key: url="{{ grafana_ppa_key }}" state=present
+  become: true
+
+- name: Add grafana repository
+  apt_repository: repo="{{ grafana_ppa }}" state=present
+  become: true
+
+- name: Update package manager
+  apt: update_cache=yes
+  become: true
+
+- name: Install latest grafana package
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - grafana
+  become: true
+
+- name: Start grafana-server service
+  service:
+    name: "grafana-server"
+    enabled: true
+    state: started
+
+# NOTE: grafana service takes a bit to start; adding datasource will fail
+#       if the service isn't running.
+- name: Wait for Grafana's port 3000 to become open on the host, don't start checking for 10 seconds
+  ansible.builtin.wait_for:
+    port: 3000
+    delay: 10
+  # register: grafanaservice
+  # until: grafanaservice.status.ActiveState == "active"
+  # retries: 15
+  # delay: 20
+
+- name: Create influxdb datasource
+  community.grafana.grafana_datasource:
+    name: "WBFM"
+    grafana_url: "http://localhost:3000"
+    # NOTE: Using default grafana username/password
+    # grafana_user: "admin"
+    # grafana_password: "admin"
+    with_credentials: false
+    org_id: "1"
+    ds_type: "influxdb"
+    ds_url: "http://localhost:8086"
+    database: "WBFM"
+    time_interval: ">10s"
+    use_proxy: false
+    validate_certs: false
+    
